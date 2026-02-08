@@ -10,7 +10,7 @@
 # [ModuleTcl] section in the configuration file. The name may be changed
 # but it must be changed in both places.
 #
-namespace eval TxFan {
+namespace eval TxFan2 {
 
 #
 # Check if this module is loaded in the current logic core
@@ -100,7 +100,7 @@ proc play_help {} {
 #   function is called for all modules.
 #
 proc status_report {} {
-  printInfo "status_report called..."
+  printInfo "Remote Base Fan status_report called..."
 }
 
 

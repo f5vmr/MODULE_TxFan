@@ -15,7 +15,7 @@
 # changed in both places.
 #
 ###############################################################################
-namespace eval TxFan {
+namespace eval TxFan2 {
 	# Check if this module is loaded in the current logic core
 	#
 	if {![info exists CFG_ID]} {
@@ -33,7 +33,7 @@ namespace eval TxFan {
 	#
 	proc printInfo {msg} {
 		variable module_name
-		puts "$module_name: $msg"
+		puts "$msg"
 	}
 	 
 	proc activateInit {} {
@@ -56,7 +56,7 @@ namespace eval TxFan {
 		variable timer
 		switch $CFG_MODE {
 			FOLLOW_PTT {
-				if {[exec cat $CFG_PTT_PATH_1] | [exec cat $CFG_PTT_PATH_2]}  { 
+				if {[exec cat $CFG_PTT_PATH_2]}  { 
 					#printInfo "Fan Enabled"
 					set fp [open $CFG_FAN_GPIO w]
 					puts $fp "1"
@@ -69,7 +69,14 @@ namespace eval TxFan {
 				}
 			}
 			COUNT_DOWN {
-				if {[exec cat $CFG_PTT_PATH_1] | [exec cat $CFG_PTT_PATH_2]}  { 
+
+				if {$timer > 0 && [exec cat $CFG_PTT_PATH_2]} {
+						set fp [open $CFG_FAN_GPIO w]
+						puts $fp "1"
+						close $fp
+						set timer $CFG_DELAY
+					# If Fan timer is already running any PTT activity resets the Fan Timer
+			  	 } elseif {[exec cat $CFG_PTT_PATH_2]}  { 
 					if {$Hysteresis_count < $CFG_HYSTERESIS_TRIGGER} {
 						# Hysteresis not yet reached, increment the counter
 						set Hysteresis_count [expr $Hysteresis_count+1] 
@@ -93,7 +100,7 @@ namespace eval TxFan {
 						puts $fp "0"
 						close $fp
 					} else {
-						#printInfo $timer
+						printInfo "Remote Base Fan Timer $timer"
 						set timer [expr $timer-1]
 					}
 				}
